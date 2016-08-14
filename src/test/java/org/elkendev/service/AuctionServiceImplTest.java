@@ -107,21 +107,16 @@ public class AuctionServiceImplTest {
     @Test
     public void testPlaceBid() throws Exception {
 
-        ArgumentCaptor<Item> captor = ArgumentCaptor.forClass(Item.class);
-
         Item item = new Item("desc");
         item.setId(1L);
-        given(itemRepository.find(eq(1L))).willReturn(item);
+        Bid bid = new Bid("user1", new BigDecimal("1.00"));
 
-        onTest.placeBid(1L, new Bid("user1", new BigDecimal("1.00")));
+        given(itemRepository.placeBid(eq(1L), eq(bid))).willReturn(item);
 
-        verify(itemRepository).saveOrUpdate(captor.capture());
-        Item itemWithBid = captor.getValue();
-        assertThat(itemWithBid.getBids()).hasSize(1);
-        Bid bid = itemWithBid.getBids().iterator().next();
-        assertThat(bid.getUser()).isEqualTo("user1");
-        assertThat(bid.getAmount()).isEqualTo(new BigDecimal("1.00"));
+        Item returnedItem = onTest.placeBid(1L, bid);
 
+        verify(itemRepository).placeBid(eq(1L), eq(bid));
+        assertThat(returnedItem).isEqualTo(item);
     }
 
     @Test(expected = ItemNotFoundException.class)

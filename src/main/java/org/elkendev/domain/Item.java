@@ -5,12 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public class Item {
 
     private Long id;
     private final String description;
-    private final SortedSet<Bid> bids = new TreeSet<>();
+    private final SortedSet<Bid> bids = new ConcurrentSkipListSet<>();
 
     public Item(String description) {
         this.description = description;

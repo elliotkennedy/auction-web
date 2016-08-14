@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,9 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -33,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = AuctionWebApplication.class)
@@ -54,15 +51,14 @@ public class BiddingIntegrationTest {
         Item item = new Item("description");
         item.setId(1L);
 
-        itemRepository.saveOrUpdate(item);
+        itemRepository.save(item);
 
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 
     }
 
     /**
-     * This test proves multiple bids can be placed concurrently,
-     * It should fail if you remove the synchronized statement in AuctionServiceImpl
+     * This test proves multiple bids can be placed concurrently and all bids will be registered
      * @throws Exception
      */
     @Test
@@ -98,6 +94,7 @@ public class BiddingIntegrationTest {
         // assert all bids have been placed
         MvcResult mvcResult = mockMvc.perform(get("/item/{id}/bids", 1L)
                 .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
 

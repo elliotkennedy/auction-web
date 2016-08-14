@@ -18,24 +18,22 @@ public class AuctionServiceImpl implements AuctionService {
     }
 
     @Override
-    public Collection<Bid> findAllBids(Long id) throws ItemNotFoundException {
+    public Collection<Bid> findAllBids(long id) throws ItemNotFoundException {
         return findItem(id).getBids();
     }
 
     @Override
-    public Bid findHighestBid(Long id) throws ItemNotFoundException {
+    public Bid findHighestBid(long id) throws ItemNotFoundException {
         return findItem(id).getHighestBid();
     }
 
-    /**
-     * In a persistent application you could use a database to avoid synchronization here
-     * see BiddingIntegrationTest to prove monitor is required
-     */
     @Override
-    public synchronized void placeBid(Long id, Bid bid) throws ItemNotFoundException {
-        Item item = findItem(id);
-        item.addBid(bid);
-        itemRepository.saveOrUpdate(item);
+    public Item placeBid(long id, Bid bid) throws ItemNotFoundException {
+        Item item = itemRepository.placeBid(id, bid);
+        if (item == null) {
+            throw new ItemNotFoundException(id);
+        }
+        return item;
     }
 
     @Override

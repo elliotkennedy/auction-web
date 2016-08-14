@@ -8,11 +8,11 @@ import java.util.Collection;
 
 public interface AuctionService {
 
-    Collection<Bid> findAllBids(Long id) throws ItemNotFoundException;
+    Collection<Bid> findAllBids(long id) throws ItemNotFoundException;
 
-    Bid findHighestBid(Long id) throws ItemNotFoundException;
+    Bid findHighestBid(long id) throws ItemNotFoundException;
 
-    void placeBid(Long id, Bid bid) throws ItemNotFoundException;
+    Item placeBid(long id, Bid bid) throws ItemNotFoundException;
 
     Collection<Item> findItemsForUser(String userName);
 
